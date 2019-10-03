@@ -1,0 +1,322 @@
+1. Modifier
+	a. protected void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
+	b. public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+	c.  private static final String LOG_TAG = MainActivity.class.getSimpleName();
+2. Method 
+	a.  public void launchSecondActivity(View view) {
+        Log.d(LOG_TAG, "Button clicked!");
+        Intent intent = new Intent(this, SecondActivity.class);
+        String message = mMessageEditText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivityForResult(intent, TEXT_REQUEST);
+    	}
+	b.	protected void onPause() {
+        	super.onPause();
+        	Log.d(LOG_TAG, "onPause");
+   		}
+	c.	protected void onResume() {
+        	super.onResume();
+        	Log.d(LOG_TAG, "onResume");
+    	}
+	d.	protected void onRestart() {
+        	super.onRestart();
+        	Log.d(LOG_TAG, "onRestart");
+    	}
+3. Class
+	a. public class MainActivity extends AppCompatActivity {
+    	// Class name for Log tag
+    	private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    	// Unique tag required for the intent extra
+    	public static final String EXTRA_MESSAGE
+            = "com.example.android.twoactivities.extra.MESSAGE";
+    	// Unique tag for the intent reply
+    	public static final int TEXT_REQUEST = 1;
+
+	    // EditText view for the message
+    	private EditText mMessageEditText;
+    	// TextView for the reply header
+   		private TextView mReplyHeadTextView;
+    	// TextView for the reply body
+    	private TextView mReplyTextView;
+
+    	@Override
+    	protected void onStart() {
+        super.onStart();
+        Log.d(LOG_TAG, "onStart");
+    	}
+
+    	/**
+    	 * Maintains the Activity state across configuration changes.
+    	 *
+    	 * @param outState Activity state data to save
+    	 */
+    	@Override
+    	public void onSaveInstanceState(Bundle outState) {
+        	super.onSaveInstanceState(outState);
+        		if (mReplyHeadTextView.getVisibility() == View.VISIBLE) {
+            	outState.putBoolean("reply_visible", true);
+            	outState.putString("reply_text", mReplyTextView.getText().toString());
+        	}
+    	}
+
+    	/**
+    	 * Initializes the activity.
+    	 *
+    	 * @param savedInstanceState The current state data
+    	 */
+    	@Override
+    	protected void onCreate(Bundle savedInstanceState) {
+        	super.onCreate(savedInstanceState);
+        		setContentView(R.layout.activity_main);
+
+        	// Log the start of the onCreate() method.
+        	Log.d(LOG_TAG, "-------");
+        	Log.d(LOG_TAG, "onCreate");
+
+        	// Initialize all the view variables.
+        	mMessageEditText = findViewById(R.id.editText_main);
+        	mReplyHeadTextView = findViewById(R.id.text_header_reply);
+        	mReplyTextView = findViewById(R.id.text_message_reply);
+
+        	// Restore the state.
+        	if (savedInstanceState != null) {
+            	boolean isVisible = savedInstanceState
+                	    .getBoolean("reply_visible");
+            if (isVisible) {
+                mReplyHeadTextView.setVisibility(View.VISIBLE);
+                mReplyTextView.setText(savedInstanceState
+                        .getString("reply_text"));
+                mReplyTextView.setVisibility(View.VISIBLE);
+            	}
+        	}
+    	}
+
+    	/**
+    	 * Handles the onClick for the "Send" button. Gets the value of the main
+    	 * EditText, creates an intent, and launches the second activity with
+    	 * that intent.
+    	 *
+    	 * The return intent from the second activity is onActivityResult().
+    	 *
+    	 * @param view The view (Button) that was clicked.
+    	 */
+    	public void launchSecondActivity(View view) {
+        	Log.d(LOG_TAG, "Button clicked!");
+        	Intent intent = new Intent(this, SecondActivity.class);
+        	String message = mMessageEditText.getText().toString();
+        	intent.putExtra(EXTRA_MESSAGE, message);
+        	startActivityForResult(intent, TEXT_REQUEST);
+    	}
+
+    	/**
+    	 * Handles the data in the return intent from SecondActivity.
+    	 *
+    	 * @param requestCode Code for the SecondActivity request.
+    	 * @param resultCode Code that comes back from SecondActivity.
+    	 * @param data Intent data sent back from SecondActivity.
+    	 */
+    	@Override
+    	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        	super.onActivityResult(requestCode, resultCode, data);
+
+        	// Test for the right intent reply.
+        	if (requestCode == TEXT_REQUEST) {
+            	// Test to make sure the intent reply result was good.
+            	if (resultCode == RESULT_OK) {
+                	String reply = data.getStringExtra(SecondActivity.EXTRA_REPLY);
+
+                	// Make the reply head visible.
+                	mReplyHeadTextView.setVisibility(View.VISIBLE);
+
+                	// Set the reply and make it visible.
+                	mReplyTextView.setText(reply);
+                	mReplyTextView.setVisibility(View.VISIBLE);
+            	}
+        	}
+    	}
+
+    	@Override
+    	protected void onPause() {
+        	super.onPause();
+        	Log.d(LOG_TAG, "onPause");
+    	}
+
+    	@Override
+    	protected void onRestart() {
+        	super.onRestart();
+       		Log.d(LOG_TAG, "onRestart");
+    	}
+
+    	@Override
+    	protected void onResume() {
+        	super.onResume();
+        	Log.d(LOG_TAG, "onResume");
+    	}
+
+    	@Override
+    	protected void onStop() {
+        	super.onStop();
+        	Log.d(LOG_TAG, "onStop");
+    	}
+
+    	@Override
+    	protected void onDestroy() {
+        	super.onDestroy();
+        	Log.d(LOG_TAG, "onDestroy");
+    	}
+	}
+
+	b.	public class SecondActivity extends AppCompatActivity {
+    	// Class name for Log tag.
+    	private static final String LOG_TAG
+            	= SecondActivity.class.getSimpleName();
+    	// Unique tag for the intent reply.
+    	public static final String EXTRA_REPLY =
+            	"com.example.android.twoactivities.extra.REPLY";
+
+    	// EditText for the reply.
+    	private EditText mReply;
+
+    	private int mCount = 49;
+    	private TextView mShowCount;
+
+    	@Override
+    	protected void onStart() {
+        	super.onStart();
+        	Log.d(LOG_TAG, "onStart");
+    	}
+
+    	/**
+    	 * Initializes the activity.
+    	 *
+    	 * @param savedInstanceState The current state data.
+    	 */
+    	@Override
+    	protected void onCreate(Bundle savedInstanceState) {
+        	super.onCreate(savedInstanceState);
+        	setContentView(R.layout.activity_second);
+
+
+
+        	mShowCount = (TextView) findViewById(R.id.show_count);
+
+        	// Get the intent that launched this activity, and the message in
+        	// the intent extra.
+        	Intent intent = getIntent();
+        	String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
+        	// Put that message into the text_message TextView.
+        	TextView textView = findViewById(R.id.text_message);
+        	textView.setText(message);
+    	}
+
+    	/**
+     	 * Handles the onClick for the "Reply" button. Gets the message from the
+      	 * second EditText, creates an intent, and returns that message back to
+     	 * the main activity.
+      	 *
+     	 * @param view The view (Button) that was clicked.
+     	 */
+    	public void returnReply(View view) {
+        	// Get the reply message from the edit text.
+        	String reply = mReply.getText().toString();
+
+        	// Create a new intent for the reply, add the reply message to it
+        	// as an extra, set the intent result, and close the activity.
+        	Intent replyIntent = new Intent();
+        	replyIntent.putExtra(EXTRA_REPLY, reply);
+        	setResult(RESULT_OK, replyIntent);
+        	Log.d(LOG_TAG, "End SecondActivity");
+        	finish();
+    	}
+    	public void countUp(View view) {
+        	mCount++;
+        	if (mShowCount != null)
+            	mShowCount.setText(Integer.toString(mCount));
+    	}
+    	public void countDown(View view) {
+        	mCount--;
+        	if (mShowCount != null)
+            	mShowCount.setText(Integer.toString(mCount));
+    	}
+
+    	@Override
+    	protected void onPause() {
+        	super.onPause();
+        	Log.d(LOG_TAG, "onPause");
+    	}
+
+    	@Override
+    	protected void onRestart() {
+        	super.onRestart();
+        	Log.d(LOG_TAG, "onRestart");
+    	}
+
+    	@Override
+    	protected void onResume() {
+        	super.onResume();
+        	Log.d(LOG_TAG, "onResume");
+    	}
+
+    	@Override
+    	protected void onStop() {
+        	super.onStop();
+        	Log.d(LOG_TAG, "onStop");
+    	}
+
+    	@Override
+    	protected void onDestroy() {
+        	super.onDestroy();
+        	Log.d(LOG_TAG, "onDestroy");
+    	}
+	}
+4. Function
+	a. public void countDown(View view) {
+        	mCount--;
+        	if (mShowCount != null)
+            	mShowCount.setText(Integer.toString(mCount));
+    	}
+	b. public void countUp(View view) {
+        	mCount++;
+        	if (mShowCount != null)
+            	mShowCount.setText(Integer.toString(mCount));
+    	}
+	c. public void launchSecondActivity(View view) {
+        	Log.d(LOG_TAG, "Button clicked!");
+        	Intent intent = new Intent(this, SecondActivity.class);
+        	String message = mMessageEditText.getText().toString();
+        	intent.putExtra(EXTRA_MESSAGE, message);
+        	startActivityForResult(intent, TEXT_REQUEST);
+    	}
+5. Constructor
+	a.	protected void onResume() {
+        	super.onResume();
+        	Log.d(LOG_TAG, "onResume");
+    	}
+	b.	protected void onRestart() {
+        	super.onRestart();
+        	Log.d(LOG_TAG, "onRestart");
+    	}
+6. Polimorfisme
+	a. mMessageEditText = findViewById(R.id.editText_main);
+	b. mReplyHeadTextView = findViewById(R.id.text_header_reply);
+	c. mReplyTextView = findViewById(R.id.text_message_reply);
+7. Inheritance
+	a. public class MainActivity extends AppCompatActivity {
+	b. public class SecondActivity extends AppCompatActivity {
+	c. class Zombie {
+    	String name;
+   		int hp;
+    	int attackPoin;
+
+    	void attack(){
+        	// ...
+    	}
+
+    	void walk(){
+       		//...
+    	}
+	}
